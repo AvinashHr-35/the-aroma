@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>The Aroma — Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5EFE0;--dark:#1C1208;--terra:#4D2E18;--red:#8B6040;--amber:#C4A96B;--white:#FAF6EE;
+  --shadow:0 8px 32px rgba(28,18,8,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);height:100vh;overflow:hidden;display:flex;flex-direction:column;max-width:520px;margin:0 auto;}
+
+/* HEADER */
+.header{background:var(--terra);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-icon{width:36px;height:36px;background:var(--amber);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);font-weight:900;}
+.logo-text span{color:var(--amber);}
+.header-center{font-size:12px;color:rgba(250,246,238,0.7);text-align:center;line-height:1.4;}
+.header-center strong{display:block;color:var(--white);font-size:15px;}
+.lang-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:var(--white);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* CATEGORY FILTERS */
+.cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;background:var(--white);border-bottom:1px solid rgba(77,46,24,0.1);}
+.cats::-webkit-scrollbar{display:none;}
+.cat-btn{flex-shrink:0;padding:6px 16px;border-radius:20px;border:1.5px solid rgba(77,46,24,0.25);background:transparent;color:var(--terra);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.cat-btn.active{background:var(--red);border-color:var(--red);color:var(--white);}
+
+/* MENU */
+.menu-wrap{flex:1;overflow-y:auto;padding:12px 16px;scrollbar-width:thin;scrollbar-color:var(--terra) transparent;}
+.menu-item{background:var(--white);border-radius:16px;padding:14px;display:flex;gap:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(28,18,8,0.06);border:1px solid rgba(77,46,24,0.08);transition:transform 0.15s;}
+.menu-item:active{transform:scale(0.98);}
+.item-img-wrap{width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0;background:rgba(77,46,24,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.item-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.item-emoji{font-size:36px;}
+.item-info{flex:1;min-width:0;}
+.item-name{font-size:15px;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.item-desc{font-size:11px;color:rgba(28,18,8,0.5);line-height:1.4;margin-bottom:6px;}
+.item-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;}
+.tag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;}
+.tag-veg{background:rgba(107,140,66,0.12);color:#6B8C42;}
+.tag-nonveg{background:rgba(122,62,40,0.1);color:#7a3e28;}
+.tag-spicy{background:rgba(139,96,64,0.12);color:var(--red);}
+.item-bottom{display:flex;align-items:center;justify-content:space-between;}
+.item-price{font-size:16px;font-weight:800;color:var(--red);font-family:'Playfair Display',serif;}
+.item-btns{display:flex;gap:6px;align-items:center;}
+.ar-btn{width:32px;height:32px;border-radius:50%;background:rgba(139,96,64,0.1);border:1px solid rgba(139,96,64,0.3);color:var(--red);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.add-btn{width:32px;height:32px;border-radius:50%;background:var(--red);border:none;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all 0.2s;}
+.add-btn.added{background:var(--terra);font-size:14px;}
+
+/* CART BAR */
+.cart-bar{background:var(--red);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;flex-shrink:0;border-top:none;}
+.cart-bar.hidden{display:none;}
+.cart-info{display:flex;align-items:center;gap:10px;}
+.cart-badge{background:var(--white);color:var(--red);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.cart-text{color:var(--white);font-size:14px;font-weight:600;}
+.cart-total{color:var(--white);font-size:16px;font-weight:800;font-family:'Playfair Display',serif;}
+
+/* ACTION BUTTONS */
+.actions{display:flex;border-top:1px solid rgba(77,46,24,0.12);flex-shrink:0;background:var(--white);}
+.act-btn{flex:1;padding:10px 4px;border:none;background:transparent;color:var(--terra);font-size:10px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif;border-right:1px solid rgba(77,46,24,0.1);transition:background 0.15s;}
+.act-btn:last-child{border-right:none;}
+.act-btn:active{background:rgba(77,46,24,0.08);}
+.act-btn .icon{font-size:18px;}
+.act-btn.danger{color:#7a3e28;}
+
+/* OVERLAYS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:flex-end;justify-content:center;}
+.overlay.show{display:flex;animation:fadeIn 0.2s ease;}
+.overlay.center{align-items:center;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;padding:24px 20px 32px;}
+.sheet.center-card{border-radius:24px;max-width:340px;padding:32px 24px;text-align:center;margin:0 16px;}
+.sheet-handle{width:40px;height:4px;background:rgba(77,46,24,0.2);border-radius:2px;margin:0 auto 20px;}
+.sheet-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--dark);margin-bottom:16px;}
+
+/* CART SHEET */
+.cart-item-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(77,46,24,0.08);}
+.cart-item-name{flex:1;font-size:14px;font-weight:600;}
+.cart-qty-wrap{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(77,46,24,0.3);background:transparent;color:var(--terra);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.qty-num{font-size:14px;font-weight:700;min-width:20px;text-align:center;}
+.cart-item-price{font-size:13px;font-weight:700;color:var(--red);min-width:50px;text-align:right;}
+.del-btn{background:rgba(122,62,40,0.08);border:none;width:28px;height:28px;border-radius:50%;color:#7a3e28;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;font-size:16px;font-weight:800;}
+.place-order-btn{width:100%;padding:15px;background:var(--terra);border:none;border-radius:14px;color:var(--white);font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:14px;}
+.add-more-btn{width:100%;padding:12px;background:transparent;border:1.5px solid rgba(77,46,24,0.3);border-radius:14px;color:var(--terra);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;}
+
+/* POPUP CARD */
+.popup-icon{font-size:60px;margin-bottom:12px;}
+.popup-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.popup-msg{font-size:14px;color:rgba(28,18,8,0.6);line-height:1.6;margin-bottom:20px;}
+.popup-btn{padding:13px 32px;background:var(--red);border:none;border-radius:12px;color:var(--white);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.popup-btn.ghost{background:transparent;border:1.5px solid rgba(77,46,24,0.3);color:var(--terra);margin-right:8px;}
+
+/* BILL SHEET */
+.bill-item-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(77,46,24,0.06);font-size:14px;}
+.bill-total-row{display:flex;justify-content:space-between;padding:12px 0 0;font-size:17px;font-weight:800;color:var(--red);}
+.pay-methods{display:flex;gap:8px;margin:16px 0;}
+.pay-btn{flex:1;padding:12px 8px;border:2px solid rgba(77,46,24,0.2);border-radius:12px;background:transparent;color:var(--terra);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;transition:all 0.2s;}
+.pay-btn.selected{border-color:var(--red);background:rgba(139,96,64,0.08);color:var(--red);}
+.confirm-bill-btn{width:100%;padding:15px;background:var(--red);border:none;border-radius:14px;color:var(--white);font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* TIMER */
+.timer-circle{width:80px;height:80px;border-radius:50%;background:rgba(139,96,64,0.1);border:3px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--red);margin:0 auto 16px;font-family:'Playfair Display',serif;}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,0.95);color:var(--white);padding:11px 22px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+#toast.show{opacity:1;}
+
+/* AR OVERLAY */
+#ar-overlay{display:none;position:fixed;inset:0;background:#0a0604;z-index:9999;}
+#ar-overlay.show{display:flex;flex-direction:column;}
+#ar-cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.85;}
+#ar-close-btn{position:absolute;top:16px;right:16px;z-index:10;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.7);border:2px solid var(--amber);color:var(--white);font-size:18px;cursor:pointer;}
+.ar-corner{position:absolute;width:40px;height:40px;}
+.ar-corner.tl{top:30%;left:10%;border-top:3px solid var(--amber);border-left:3px solid var(--amber);border-radius:4px 0 0 0;}
+.ar-corner.tr{top:30%;right:10%;border-top:3px solid var(--amber);border-right:3px solid var(--amber);border-radius:0 4px 0 0;}
+.ar-corner.bl{bottom:48%;left:10%;border-bottom:3px solid var(--amber);border-left:3px solid var(--amber);border-radius:0 0 0 4px;}
+.ar-corner.br{bottom:48%;right:10%;border-bottom:3px solid var(--amber);border-right:3px solid var(--amber);border-radius:0 0 4px 0;}
+#ar-scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:scanAnim 2s linear infinite;z-index:2;}
+@keyframes scanAnim{0%{top:30%;}100%{top:52%;}}
+#ar-float{position:absolute;top:40%;left:50%;transform:translate(-50%,-60%);z-index:5;animation:floatAnim 3s ease-in-out infinite;display:none;}
+@keyframes floatAnim{0%,100%{transform:translate(-50%,-60%);}50%{transform:translate(-50%,-70%);}}
+#ar-float img,#ar-float .ar-emoji{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid var(--amber);box-shadow:0 12px 40px rgba(0,0,0,0.7);}
+#ar-float .ar-emoji{background:rgba(20,10,4,0.9);display:flex;align-items:center;justify-content:center;font-size:52px;}
+#ar-card{position:absolute;bottom:0;left:0;right:0;background:rgba(10,6,4,0.96);border-radius:24px 24px 0 0;border-top:2px solid var(--amber);padding:20px;z-index:6;transform:translateY(100%);transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1);}
+#ar-card.show{transform:translateY(0);}
+.ar-handle{width:40px;height:4px;background:rgba(196,169,107,0.3);border-radius:2px;margin:0 auto 14px;}
+.ar-top{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
+.ar-thumb{width:64px;height:64px;border-radius:12px;object-fit:cover;border:2px solid var(--amber);flex-shrink:0;}
+.ar-thumb-emoji{width:64px;height:64px;border-radius:12px;background:rgba(28,18,8,0.5);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border:2px solid var(--amber);}
+.ar-item-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:900;color:var(--white);margin-bottom:3px;}
+.ar-item-price{font-size:20px;font-weight:800;color:var(--amber);font-family:'Playfair Display',serif;}
+.ar-nutr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.ar-nutr-box{background:rgba(139,96,64,0.12);border-radius:8px;padding:7px 4px;text-align:center;}
+.ar-nutr-box b{display:block;font-size:13px;font-weight:700;color:var(--amber);}
+.ar-nutr-box small{font-size:9px;color:rgba(250,246,238,0.4);}
+.ar-ings{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.ar-ing{background:rgba(139,96,64,0.1);border:1px solid rgba(139,96,64,0.2);border-radius:10px;padding:3px 9px;font-size:10px;color:rgba(250,246,238,0.7);}
+.ar-actions{display:flex;gap:10px;}
+.ar-qty-row{display:flex;border:1px solid rgba(196,169,107,0.4);border-radius:10px;overflow:hidden;}
+.ar-qty-btn{width:38px;height:42px;background:rgba(139,96,64,0.15);border:none;color:var(--amber);font-size:20px;cursor:pointer;}
+.ar-qty-val{width:36px;height:42px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--white);}
+.ar-add-btn{flex:1;height:42px;background:var(--red);border:none;border-radius:10px;color:var(--white);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🍽️</div>
+    <div class="logo-text">THE <span>AROMA</span></div>
+  </div>
+  <div class="header-center">
+    <strong id="rest-name-display">Restaurant</strong>
+    <span id="table-display">Table 4</span>
+  </div>
+  <button class="lang-btn" onclick="toggleLang()">हि/EN</button>
+</div>
+
+<!-- CATEGORIES -->
+<div class="cats">
+  <button class="cat-btn active" onclick="filterCat(this,'all')">🍽️ All</button>
+  <button class="cat-btn" onclick="filterCat(this,'starter')">🥗 Starters</button>
+  <button class="cat-btn" onclick="filterCat(this,'main')">🍛 Main</button>
+  <button class="cat-btn" onclick="filterCat(this,'bread')">🫓 Breads</button>
+  <button class="cat-btn" onclick="filterCat(this,'drink')">🥤 Drinks</button>
+  <button class="cat-btn" onclick="filterCat(this,'dessert')">🍨 Desserts</button>
+</div>
+
+<!-- MENU GRID -->
+<div class="menu-wrap" id="menu-grid"></div>
+
+<!-- CART BAR -->
+<div class="cart-bar hidden" id="cart-bar" onclick="openCart()">
+  <div class="cart-info">
+    <div class="cart-badge" id="cart-count">0</div>
+    <div class="cart-text">View Cart</div>
+  </div>
+  <div class="cart-total" id="cart-total">₹0</div>
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="actions">
+  <button class="act-btn" onclick="callWaiter()"><span class="icon">🔔</span>Call Waiter</button>
+  <button class="act-btn" onclick="requestBill()"><span class="icon">🧾</span>Request Bill</button>
+  <button class="act-btn" onclick="showFeedback()"><span class="icon">⭐</span>Feedback</button>
+  <button class="act-btn danger" id="cancel-btn" onclick="showCancelOrder()"><span class="icon">✕</span>Cancel</button>
+</div>
+
+<!-- CART OVERLAY -->
+<div class="overlay" id="cart-overlay">
+  <div class="sheet" id="cart-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🛒 Your Cart</div>
+    <div id="cart-items"></div>
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total-bill">₹0</span>
+    </div>
+    <button class="place-order-btn" onclick="placeOrder()">🍽️ Place Order</button>
+    <button class="add-more-btn" onclick="closeOverlay('cart-overlay')">+ Add More Items</button>
+  </div>
+</div>
+
+<!-- ORDER PLACED POPUP -->
+<div class="overlay center" id="order-popup">
+  <div class="sheet center-card">
+    <div class="popup-icon">👨‍🍳</div>
+    <div class="popup-title" id="order-popup-title">Order Place Ho Gaya! 🎉</div>
+    <div class="popup-msg" id="order-popup-msg">Aapka order kitchen mein pahunch gaya! Thoda wait karein. 😊</div>
+    <button class="popup-btn" onclick="closeOverlay('order-popup')">😊 Okay, Thanks!</button>
+  </div>
+</div>
+
+<!-- BILL OVERLAY -->
+<div class="overlay" id="bill-overlay">
+  <div class="sheet" id="bill-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🧾 Your Bill</div>
+    <div id="bill-items"></div>
+    <div class="bill-total-row">
+      <span>Total</span>
+      <span id="bill-total">₹0</span>
+    </div>
+    <div class="pay-methods">
+      <button class="pay-btn" onclick="selectPay(this,'Cash')">💵 Cash</button>
+      <button class="pay-btn" onclick="selectPay(this,'Card')">💳 Card</button>
+      <button class="pay-btn" onclick="selectPay(this,'UPI')">📱 UPI</button>
+    </div>
+    <button class="confirm-bill-btn" id="confirm-bill-btn" onclick="confirmBill()">✅ Request Bill</button>
+  </div>
+</div>
+
+<!-- BILL WAITING POPUP -->
+<div class="overlay center" id="bill-wait-popup">
+  <div class="sheet center-card">
+    <div class="timer-circle" id="bill-timer">5:00</div>
+    <div class="popup-title">Waiter Aa Raha Hai!</div>
+    <div class="popup-msg">Aapka bill ready ho raha hai. Thodi der mein waiter aayega. 🛎️</div>
+    <button class="popup-btn" onclick="billDone()">✓ Got It</button>
+  </div>
+</div>
+
+<!-- THANK YOU POPUP -->
+<div class="overlay center" id="thankyou-popup">
+  <div class="sheet center-card" style="background:var(--terra);border:2px solid var(--amber);">
+    <div class="popup-icon">🙏</div>
+    <div class="popup-title" id="ty-title" style="color:var(--white);">Shukriya!</div>
+    <div class="popup-msg" id="ty-msg" style="color:rgba(250,246,238,0.8);">Aapka khaana pasand aaya! Dobara padharo!</div>
+    <button class="popup-btn" onclick="closeOverlay('thankyou-popup')" style="background:var(--amber);color:var(--dark);">😊 Zaroor Aayenge!</button>
+  </div>
+</div>
+
+<!-- CANCEL POPUP -->
+<div class="overlay center" id="cancel-popup">
+  <div class="sheet center-card">
+    <div class="popup-icon">🗑️</div>
+    <div class="popup-title">Cancel karna hai?</div>
+    <div class="popup-msg">Kya aap apna order cancel karna chahte ho?</div>
+    <div>
+      <button class="popup-btn ghost" onclick="closeOverlay('cancel-popup')">Nahi</button>
+      <button class="popup-btn" style="background:#7a3e28;" onclick="confirmCancel()">Haan, Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEEDBACK POPUP -->
+<div class="overlay center" id="feedback-popup">
+  <div class="sheet center-card">
+    <div class="popup-icon">⭐</div>
+    <div class="popup-title">Feedback do!</div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px;" id="star-row">
+      <span style="font-size:32px;cursor:pointer;" onclick="setRating(1)">⭐</span>
+      <span style="font-size:32px;cursor:pointer;" onclick="setRating(2)">⭐</span>
+      <span style="font-size:32px;cursor:pointer;" onclick="setRating(3)">⭐</span>
+      <span style="font-size:32px;cursor:pointer;" onclick="setRating(4)">⭐</span>
+      <span style="font-size:32px;cursor:pointer;" onclick="setRating(5)">⭐</span>
+    </div>
+    <textarea id="feedback-text-input" placeholder="Kuch likhna chahte ho?" style="width:100%;padding:10px;border:1.5px solid rgba(77,46,24,0.2);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;resize:none;height:80px;margin-bottom:12px;background:var(--bg);color:var(--dark);"></textarea>
+    <button class="popup-btn" onclick="submitFeedback()">⭐ Submit</button>
+    <button class="add-more-btn" style="margin-top:8px;" onclick="closeOverlay('feedback-popup')">Cancel</button>
+  </div>
+</div>
+
+<!-- AR OVERLAY -->
+<div id="ar-overlay">
+  <video id="ar-cam" autoplay playsinline muted></video>
+  <button id="ar-close-btn" onclick="closeAR()">✕</button>
+  <div id="ar-scan"></div>
+  <div class="ar-corner tl"></div>
+  <div class="ar-corner tr"></div>
+  <div class="ar-corner bl"></div>
+  <div class="ar-corner br"></div>
+  <div id="ar-float"><div id="ar-float-inner"></div></div>
+  <div id="ar-card">
+    <div class="ar-handle"></div>
+    <div class="ar-top">
+      <div id="ar-img-wrap"></div>
+      <div>
+        <div class="ar-item-name" id="ar-item-name"></div>
+        <div class="ar-item-price" id="ar-item-price"></div>
+      </div>
+    </div>
+    <div class="ar-nutr">
+      <div class="ar-nutr-box"><b id="ar-cal">--</b><small>CAL</small></div>
+      <div class="ar-nutr-box"><b id="ar-prot">--</b><small>PROT</small></div>
+      <div class="ar-nutr-box"><b id="ar-carb">--</b><small>CARB</small></div>
+      <div class="ar-nutr-box"><b id="ar-fat">--</b><small>FAT</small></div>
+    </div>
+    <div class="ar-ings" id="ar-ings"></div>
+    <div class="ar-actions">
+      <div class="ar-qty-row">
+        <button class="ar-qty-btn" onclick="arQtyChange(-1)">−</button>
+        <div class="ar-qty-val" id="ar-qty">1</div>
+        <button class="ar-qty-btn" onclick="arQtyChange(1)">+</button>
+      </div>
+      <button class="ar-add-btn" onclick="arAddToCart()">🛒 Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── CONFIG ──
+var RESTAURANT_ID = 'demo-restaurant'; // Firebase se aayega
+var TABLE_NUM = 4;
+var lang = 'en';
+var selectedPay = 'Cash';
+var cart = [];
+var placedItems = [];
+var arItem = null;
+var arQtyVal = 1;
+var arStream = null;
+var billTimerInterval = null;
+
+// ── MENU DATA (Firebase se override hoga) ──
+var menuItems = [
+  {id:1,emoji:'🥗',name:'Paneer Tikka',nameHi:'पनीर टिक्का',desc:'Grilled cottage cheese with spices',descHi:'मसालों के साथ पनीर',price:220,cat:'starter',tags:['veg','spicy'],cal:280,protein:18,carbs:14,fat:16,spice:2,ing:['🧀 Paneer','🌶 Chilli','🧄 Garlic','🌿 Coriander']},
+  {id:2,emoji:'🍗',name:'Chicken 65',nameHi:'चिकन 65',desc:'Crispy spiced chicken bites',descHi:'मसालेदार क्रिस्पी चिकन',price:280,cat:'starter',tags:['nonveg','spicy'],cal:350,protein:28,carbs:18,fat:14,spice:3,ing:['🍗 Chicken','🌶 Chilli','🧄 Garlic','🫚 Oil']},
+  {id:3,emoji:'🥘',name:'Dal Makhani',nameHi:'दाल मखनी',desc:'Creamy black lentils slow cooked',descHi:'मलाईदार काली दाल',price:200,cat:'main',tags:['veg'],cal:320,protein:14,carbs:38,fat:10,spice:1,ing:['🫘 Dal','🧅 Onion','🍅 Tomato','🥛 Cream']},
+  {id:4,emoji:'🍛',name:'Butter Chicken',nameHi:'बटर चिकन',desc:'Classic creamy tomato curry',descHi:'क्लासिक बटर चिकन',price:320,cat:'main',tags:['nonveg'],cal:450,protein:32,carbs:18,fat:22,spice:2,ing:['🍗 Chicken','🍅 Tomato','🧈 Butter','🥛 Cream']},
+  {id:5,emoji:'🍚',name:'Veg Biryani',nameHi:'वेज बिरयानी',desc:'Fragrant rice with vegetables',descHi:'सब्जियों के साथ बिरयानी',price:250,cat:'main',tags:['veg'],cal:380,protein:10,carbs:62,fat:8,spice:2,ing:['🍚 Rice','🥕 Carrot','🧅 Onion','🌿 Mint']},
+  {id:6,emoji:'🫓',name:'Butter Naan',nameHi:'बटर नान',desc:'Soft leavened bread with butter',descHi:'मक्खन के साथ नान',price:50,cat:'bread',tags:['veg'],cal:180,protein:6,carbs:28,fat:6,spice:0,ing:['🌾 Flour','🧈 Butter','🥛 Milk','🧂 Salt']},
+  {id:7,emoji:'🫓',name:'Garlic Roti',nameHi:'गार्लिक रोटी',desc:'Whole wheat with garlic flavor',descHi:'गार्लिक रोटी',price:40,cat:'bread',tags:['veg'],cal:120,protein:4,carbs:22,fat:3,spice:0,ing:['🌾 Flour','🧄 Garlic','🧈 Butter']},
+  {id:8,emoji:'🥤',name:'Mango Lassi',nameHi:'मैंगो लस्सी',desc:'Chilled mango yogurt drink',descHi:'ठंडी मैंगो लस्सी',price:120,cat:'drink',tags:['veg'],cal:210,protein:6,carbs:38,fat:4,spice:0,ing:['🥭 Mango','🥛 Yogurt','🍬 Sugar','🧊 Ice']},
+  {id:9,emoji:'🧃',name:'Fresh Lime Soda',nameHi:'लाइम सोडा',desc:'Refreshing lime with soda',descHi:'नींबू सोडा',price:80,cat:'drink',tags:['veg'],cal:40,protein:0,carbs:10,fat:0,spice:0,ing:['🍋 Lime','🫧 Soda','🍬 Sugar','🌿 Mint']},
+  {id:10,emoji:'🍨',name:'Gulab Jamun',nameHi:'गुलाब जामुन',desc:'Soft dumplings in sugar syrup',descHi:'गुलाब जामुन',price:100,cat:'dessert',tags:['veg'],cal:290,protein:5,carbs:48,fat:10,spice:0,ing:['🥛 Milk Powder','🌾 Flour','🍬 Sugar Syrup','🌸 Rose']},
+  {id:11,emoji:'🍧',name:'Kulfi',nameHi:'कुल्फी',desc:'Traditional Indian ice cream',descHi:'पारंपरिक कुल्फी',price:90,cat:'dessert',tags:['veg'],cal:180,protein:5,carbs:24,fat:8,spice:0,ing:['🥛 Milk','🍬 Sugar','🌰 Pistachio']},
+  {id:12,emoji:'🍖',name:'Seekh Kebab',nameHi:'सीख कबाब',desc:'Spiced minced meat on skewers',descHi:'सीख कबाब',price:300,cat:'starter',tags:['nonveg','spicy'],cal:420,protein:36,carbs:8,fat:24,spice:3,ing:['🥩 Mutton','🧅 Onion','🌶 Chilli','🧄 Garlic']},
+];
+
+// ── FIREBASE INIT ──
+// Ab hum localStorage use kar rahe hain — Firebase config owner tab se milega
+function saveToKitchen(type, data){
+  try{
+    if(type==='order'){
+      var orders = JSON.parse(localStorage.getItem('tabin_orders')||'[]');
+      orders.unshift(data);
+      localStorage.setItem('tabin_orders', JSON.stringify(orders));
+    } else if(type==='bill'){
+      var bills = JSON.parse(localStorage.getItem('tabin_bills')||'[]');
+      bills.push(data);
+      localStorage.setItem('tabin_bills', JSON.stringify(bills));
+    } else if(type==='waiter'){
+      localStorage.setItem('tabin_waiter', JSON.stringify(data));
+    } else if(type==='cancel'){
+      var orders2 = JSON.parse(localStorage.getItem('tabin_orders')||'[]');
+      orders2.forEach(function(o){ if(o.table===TABLE_NUM && (o.status==='new'||o.status==='urgent')) o.status='cancelled'; });
+      localStorage.setItem('tabin_orders', JSON.stringify(orders2));
+      localStorage.setItem('tabin_cancel', JSON.stringify({table:TABLE_NUM, time:Date.now()}));
+    }
+  }catch(e){}
+}
+
+// Load menu from localStorage if owner updated it
+function loadMenu(){
+  try{
+    var m = localStorage.getItem('tabin_menu');
+    if(m){ var p=JSON.parse(m); if(p&&p.length>0){ menuItems=p; } }
+  }catch(e){}
+}
+
+// Load settings
+function loadSettings(){
+  try{
+    var s = localStorage.getItem('tabin_settings');
+    if(s){ var p=JSON.parse(s); document.getElementById('rest-name-display').textContent=p.name||'The Aroma'; TABLE_NUM=p.table||4; document.getElementById('table-display').textContent='Table '+TABLE_NUM; }
+  }catch(e){}
+}
+
+// ── RENDER MENU ──
+var currentCat = 'all';
+function renderMenu(){
+  var allItems = currentCat==='all' ? menuItems : menuItems.filter(function(i){return i.cat===currentCat;});
+  // Out of stock items customer ko nahi dikhenge
+  var items = allItems.filter(function(i){ return i.inStock !== false; });
+  document.getElementById('menu-grid').innerHTML = items.map(function(item){
+    var inCart = cart.find(function(c){return c.id===item.id;});
+    var tags = (item.tags||[]).map(function(t){
+      return '<span class="tag tag-'+t+'">'+(t==='veg'?'🌱 Veg':t==='nonveg'?'🍖 Non-Veg':'🌶 Spicy')+'</span>';
+    }).join('');
+    var imgHtml = item.image
+      ? '<img src="'+item.image+'" style="width:100%;height:100%;object-fit:cover;" onclick="openAR('+item.id+')" onerror="this.parentElement.innerHTML=\'<span class=item-emoji>'+item.emoji+'</span>\'">'
+      : '<span class="item-emoji" onclick="openAR('+item.id+')" style="cursor:pointer;">'+item.emoji+'</span>';
+    return '<div class="menu-item">'
+      +'<div class="item-img-wrap">'+imgHtml+'</div>'
+      +'<div class="item-info">'
+        +'<div class="item-name">'+(lang==='hi'?item.nameHi:item.name)+'</div>'
+        +'<div class="item-desc">'+(lang==='hi'?(item.descHi||item.desc):item.desc)+'</div>'
+        +'<div class="item-tags">'+tags+'</div>'
+        +'<div class="item-bottom">'
+          +'<div class="item-price">₹'+item.price+'</div>'
+          +'<div class="item-btns">'
+            +'<button class="ar-btn" onclick="openAR('+item.id+')">🔮</button>'
+            +'<button class="add-btn'+(inCart?' added':'')+'" onclick="addToCart('+item.id+')">'+(inCart?'✓':'+')+'</button>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:rgba(28,18,8,0.4);font-size:14px;">No items in this category</div>';
+}
+
+function filterCat(btn, cat){
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  currentCat = cat;
+  renderMenu();
+}
+
+// ── CART ──
+function addToCart(id){
+  var item = menuItems.find(function(i){return i.id===id;});
+  if(!item) return;
+  var ex = cart.find(function(c){return c.id===id;});
+  if(ex) ex.qty++;
+  else cart.push({id:item.id,name:item.name,nameHi:item.nameHi,price:item.price,qty:1});
+  updateCartBar();
+  renderMenu();
+  showToast('✅ '+(lang==='hi'?item.nameHi:item.name)+' added!');
+}
+
+function removeFromCart(id){
+  cart = cart.filter(function(c){return c.id!==id;});
+  updateCartBar();
+  renderCart();
+  renderMenu();
+}
+
+function changeCartQty(id, delta){
+  var item = cart.find(function(c){return c.id===id;});
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty<=0) cart = cart.filter(function(c){return c.id!==id;});
+  updateCartBar();
+  if(cart.length) renderCart(); else closeOverlay('cart-overlay');
+  renderMenu();
+}
+
+function updateCartBar(){
+  var total = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var count = cart.reduce(function(s,i){return s+i.qty;},0);
+  document.getElementById('cart-count').textContent = count;
+  document.getElementById('cart-total').textContent = '₹'+total;
+  var bar = document.getElementById('cart-bar');
+  if(count>0) bar.classList.remove('hidden'); else bar.classList.add('hidden');
+}
+
+function openCart(){
+  renderCart();
+  showOverlay('cart-overlay');
+}
+
+function renderCart(){
+  var total = cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  document.getElementById('cart-items').innerHTML = cart.map(function(item){
+    return '<div class="cart-item-row">'
+      +'<div class="cart-item-name">'+(lang==='hi'?item.nameHi:item.name)+'</div>'
+      +'<div class="cart-qty-wrap">'
+        +'<button class="qty-btn" onclick="changeCartQty('+item.id+',-1)">−</button>'
+        +'<span class="qty-num">'+item.qty+'</span>'
+        +'<button class="qty-btn" onclick="changeCartQty('+item.id+',1)">+</button>'
+      +'</div>'
+      +'<div class="cart-item-price">₹'+(item.price*item.qty)+'</div>'
+      +'<button class="del-btn" onclick="removeFromCart('+item.id+')">🗑</button>'
+    +'</div>';
+  }).join('');
+  document.getElementById('cart-total-bill').textContent = '₹'+total;
+}
+
+// ── PLACE ORDER ──
+function placeOrder(){
+  if(!cart.length){ showToast('🛒 Cart khaali hai!'); return; }
+  // Accumulate placed items for bill
+  cart.forEach(function(ci){
+    var ex = placedItems.find(function(p){return p.id===ci.id;});
+    if(ex) ex.qty += ci.qty;
+    else placedItems.push({id:ci.id, name:ci.name, nameHi:ci.nameHi, price:ci.price, qty:ci.qty});
+  });
+  // Send to kitchen via localStorage
+  saveToKitchen('order', {
+    table: TABLE_NUM,
+    items: cart.map(function(i){return {qty:i.qty, n:i.name, nh:i.nameHi||i.name, price:i.price};}),
+    status: 'new',
+    time: Date.now()
+  });
+  cart = [];
+  updateCartBar();
+  renderMenu();
+  closeOverlay('cart-overlay');
+  // Show popup
+  try{
+    var msg = JSON.parse(localStorage.getItem('tabin_order_msg')||'{}');
+    document.getElementById('order-popup-title').textContent = msg.title||'Order Place Ho Gaya! 🎉';
+    document.getElementById('order-popup-msg').textContent = msg.msg||'Aapka order kitchen mein pahunch gaya! Thoda wait karein. 😊';
+  }catch(e){}
+  showOverlay('order-popup');
+}
+
+// ── REQUEST BILL ──
+function requestBill(){
+  if(!placedItems.length){ showToast('Pehle kuch order karo!'); return; }
+  var total = placedItems.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst = Math.round(total*0.05);
+  document.getElementById('bill-items').innerHTML = placedItems.map(function(i){
+    return '<div class="bill-item-row"><span>'+(lang==='hi'?i.nameHi:i.name)+' x'+i.qty+'</span><span>₹'+(i.price*i.qty)+'</span></div>';
+  }).join('')+'<div class="bill-item-row"><span>GST (5%)</span><span>₹'+gst+'</span></div>';
+  document.getElementById('bill-total').textContent = '₹'+(total+gst);
+  selectedPay = 'Cash';
+  document.querySelectorAll('.pay-btn').forEach(function(b){b.classList.remove('selected');});
+  document.querySelectorAll('.pay-btn')[0].classList.add('selected');
+  showOverlay('bill-overlay');
+}
+
+function selectPay(btn, method){
+  selectedPay = method;
+  document.querySelectorAll('.pay-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+}
+
+function confirmBill(){
+  var total = placedItems.reduce(function(s,i){return s+i.price*i.qty;},0);
+  saveToKitchen('bill', {table:TABLE_NUM, items:placedItems, total:total+Math.round(total*0.05), payMethod:selectedPay, time:Date.now()});
+  closeOverlay('bill-overlay');
+  showOverlay('bill-wait-popup');
+  startBillTimer(5*60);
+}
+
+function startBillTimer(secs){
+  clearInterval(billTimerInterval);
+  var rem = secs;
+  billTimerInterval = setInterval(function(){
+    rem--;
+    var m = Math.floor(rem/60);
+    var s = rem%60;
+    document.getElementById('bill-timer').textContent = m+':'+(s<10?'0':'')+s;
+    if(rem<=0){ clearInterval(billTimerInterval); }
+  }, 1000);
+}
+
+function billDone(){
+  clearInterval(billTimerInterval);
+  placedItems = [];
+  closeOverlay('bill-wait-popup');
+  try{
+    var ty = JSON.parse(localStorage.getItem('tabin_thankyou')||'{}');
+    document.getElementById('ty-title').textContent = ty.title||'Shukriya! 🙏';
+    document.getElementById('ty-msg').textContent = ty.msg||'Aapka khaana pasand aaya! Dobara padharo!';
+  }catch(e){}
+  showOverlay('thankyou-popup');
+}
+
+// ── CALL WAITER ──
+function callWaiter(){
+  saveToKitchen('waiter', {table:TABLE_NUM, time:Date.now()});
+  showToast('🔔 Waiter ko call kar diya! Coming shortly...');
+}
+
+// ── FEEDBACK ──
+var userRating = 0;
+function showFeedback(){ userRating=0; showOverlay('feedback-popup'); }
+function setRating(r){
+  userRating = r;
+  var stars = document.querySelectorAll('#star-row span');
+  stars.forEach(function(s,i){ s.textContent = i<r ? '⭐' : '☆'; });
+}
+function submitFeedback(){
+  var text = document.getElementById('feedback-text-input').value;
+  try{ localStorage.setItem('tabin_feedback', JSON.stringify({rating:userRating, text:text, table:TABLE_NUM, time:Date.now()})); }catch(e){}
+  closeOverlay('feedback-popup');
+  showToast('⭐ Thank you for your feedback!');
+}
+
+// ── CANCEL ORDER ──
+function showCancelOrder(){
+  if(!cart.length && !placedItems.length){ showToast('Koi order nahi hai cancel karne ko!'); return; }
+  // Check if kitchen already received (status changed from 'new')
+  try{
+    var orders = JSON.parse(localStorage.getItem('tabin_orders')||'[]');
+    var myOrders = orders.filter(function(o){ return o.table===TABLE_NUM; });
+    var anyReceived = myOrders.some(function(o){ return o.status==='preparing'||o.status==='ready'; });
+    if(anyReceived){
+      showToast('❌ Kitchen ne order receive kar liya — ab cancel nahi hoga!');
+      // Hide cancel button
+      var btn = document.getElementById('cancel-btn');
+      if(btn) btn.style.display='none';
+      return;
+    }
+  }catch(e){}
+  showOverlay('cancel-popup');
+}
+
+function confirmCancel(){
+  cart = [];
+  placedItems = [];
+  updateCartBar();
+  renderMenu();
+  saveToKitchen('cancel', {table:TABLE_NUM, time:Date.now()});
+  closeOverlay('cancel-popup');
+  showToast('✅ Order cancel ho gaya!');
+}
+
+// ── AR VIEW ──
+function openAR(id){
+  arItem = menuItems.find(function(i){return i.id===id;});
+  if(!arItem) return;
+  arQtyVal = 1;
+  document.getElementById('ar-qty').textContent = '1';
+  document.getElementById('ar-item-name').textContent = lang==='hi'?arItem.nameHi:arItem.name;
+  document.getElementById('ar-item-price').textContent = '₹'+arItem.price;
+  document.getElementById('ar-cal').textContent = arItem.cal||'--';
+  document.getElementById('ar-prot').textContent = (arItem.protein||'--')+'g';
+  document.getElementById('ar-carb').textContent = (arItem.carbs||'--')+'g';
+  document.getElementById('ar-fat').textContent = (arItem.fat||'--')+'g';
+  document.getElementById('ar-ings').innerHTML = (arItem.ing||[]).map(function(i){return '<span class="ar-ing">'+i+'</span>';}).join('');
+  // Image wrap
+  var wrap = document.getElementById('ar-img-wrap');
+  if(arItem.image){
+    wrap.innerHTML = '<img class="ar-thumb" src="'+arItem.image+'" />';
+  } else {
+    wrap.innerHTML = '<div class="ar-thumb-emoji">'+arItem.emoji+'</div>';
+  }
+  // Float image
+  var fi = document.getElementById('ar-float-inner');
+  if(arItem.image){
+    fi.innerHTML = '<img src="'+arItem.image+'" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid var(--amber);box-shadow:0 12px 40px rgba(0,0,0,0.7);">';
+  } else {
+    fi.innerHTML = '<div class="ar-emoji">'+arItem.emoji+'</div>';
+  }
+  document.getElementById('ar-overlay').classList.add('show');
+  // Camera
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}})
+    .then(function(s){
+      arStream=s;
+      var v=document.getElementById('ar-cam');
+      v.srcObject=s; v.play();
+    }).catch(function(){});
+  }
+  setTimeout(function(){document.getElementById('ar-float').style.display='block';},400);
+  setTimeout(function(){document.getElementById('ar-card').classList.add('show');},900);
+}
+
+function closeAR(){
+  document.getElementById('ar-overlay').classList.remove('show');
+  document.getElementById('ar-card').classList.remove('show');
+  document.getElementById('ar-float').style.display='none';
+  if(arStream){arStream.getTracks().forEach(function(t){t.stop();});arStream=null;}
+  document.getElementById('ar-cam').srcObject=null;
+}
+
+function arQtyChange(d){ arQtyVal=Math.max(1,arQtyVal+d); document.getElementById('ar-qty').textContent=arQtyVal; }
+function arAddToCart(){
+  if(!arItem) return;
+  for(var i=0;i<arQtyVal;i++) addToCart(arItem.id);
+  closeAR();
+}
+
+// ── LANG ──
+function toggleLang(){
+  lang = lang==='en'?'hi':'en';
+  renderMenu();
+  showToast(lang==='hi'?'🇮🇳 Hindi mein badla!':'🇬🇧 Switched to English!');
+}
+
+// ── OVERLAY HELPERS ──
+function showOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+// ── TOAST ──
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toast);
+  window._toast = setTimeout(function(){t.classList.remove('show');}, 2500);
+}
+
+// ── INIT ──
+loadMenu();
+loadSettings();
+renderMenu();
+</script>
+</body>
+</html>
