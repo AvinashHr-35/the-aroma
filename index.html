@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Aroma — Restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#F5EFE0;color:#1C1208;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.logo-wrap{text-align:center;margin-bottom:48px;}
+.logo-icon{width:80px;height:80px;background:#4D2E18;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;}
+.logo-name{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#1C1208;letter-spacing:2px;}
+.logo-name span{color:#8B6040;}
+.logo-tag{font-size:13px;color:rgba(28,18,8,0.5);letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
+.cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:360px;}
+.card{background:#FAF6EE;border-radius:20px;padding:20px 24px;display:flex;align-items:center;gap:16px;text-decoration:none;color:#1C1208;border:1.5px solid rgba(77,46,24,0.12);transition:all 0.2s;box-shadow:0 2px 12px rgba(28,18,8,0.06);}
+.card:active{transform:scale(0.98);}
+.card:hover{border-color:rgba(139,96,64,0.4);box-shadow:0 4px 20px rgba(28,18,8,0.1);}
+.card-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.c1{background:rgba(139,96,64,0.12);}
+.c2{background:rgba(77,46,24,0.1);}
+.c3{background:rgba(196,169,107,0.2);}
+.card-info{flex:1;}
+.card-title{font-size:16px;font-weight:700;margin-bottom:3px;}
+.card-desc{font-size:12px;color:rgba(28,18,8,0.5);}
+.card-arrow{font-size:18px;color:rgba(28,18,8,0.25);}
+.footer{margin-top:40px;font-size:11px;color:rgba(28,18,8,0.3);text-align:center;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="logo-wrap">
+  <div class="logo-icon">🍽️</div>
+  <div class="logo-name">THE <span>AROMA</span></div>
+  <div class="logo-tag">Restaurant Management</div>
+</div>
+
+<div class="cards">
+  <a class="card" href="tabin-customer.html">
+    <div class="card-icon c1">📱</div>
+    <div class="card-info">
+      <div class="card-title">Customer Menu</div>
+      <div class="card-desc">Table pe order karo, bill maango</div>
+    </div>
+    <div class="card-arrow">›</div>
+  </a>
+  <a class="card" href="tabin-kitchen.html">
+    <div class="card-icon c2">👨‍🍳</div>
+    <div class="card-info">
+      <div class="card-title">Kitchen Display</div>
+      <div class="card-desc">Live orders aur status manage karo</div>
+    </div>
+    <div class="card-arrow">›</div>
+  </a>
+  <a class="card" href="tabin-owner.html">
+    <div class="card-icon c3">📊</div>
+    <div class="card-info">
+      <div class="card-title">Owner Dashboard</div>
+      <div class="card-desc">Analytics, menu aur settings</div>
+    </div>
+    <div class="card-arrow">›</div>
+  </a>
+</div>
+
+<div class="footer">Powered by Tab In • The Aroma</div>
+</body>
+</html>
