@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>The Aroma — Owner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5EFE0;--dark:#1C1208;--terra:#4D2E18;--red:#8B6040;--amber:#C4A96B;--white:#FAF6EE;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+
+/* ── LOGIN PAGE ── */
+#login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-card{background:var(--white);border-radius:24px;padding:40px 32px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(28,18,8,0.15);border:1px solid rgba(77,46,24,0.1);}
+.login-logo{text-align:center;margin-bottom:32px;}
+.login-logo-icon{width:64px;height:64px;background:var(--terra);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px;}
+.login-logo-text{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--dark);}
+.login-logo-text span{color:var(--red);}
+.login-subtitle{font-size:13px;color:rgba(28,18,8,0.5);margin-top:4px;}
+.login-tabs{display:flex;background:rgba(77,46,24,0.08);border-radius:12px;padding:4px;margin-bottom:24px;}
+.login-tab{flex:1;padding:9px;text-align:center;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:rgba(28,18,8,0.5);transition:all 0.2s;}
+.login-tab.active{background:var(--white);color:var(--terra);box-shadow:0 2px 8px rgba(28,18,8,0.1);}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:12px;font-weight:700;color:rgba(28,18,8,0.5);margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase;}
+.form-input{width:100%;padding:13px 16px;border:1.5px solid rgba(77,46,24,0.2);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--bg);transition:border-color 0.2s;outline:none;}
+.form-input:focus{border-color:var(--red);}
+.form-btn{width:100%;padding:15px;background:var(--terra);border:none;border-radius:12px;color:var(--white);font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;transition:background 0.2s;}
+.form-btn:hover{background:var(--red);}
+.login-error{color:#7a3e28;font-size:13px;text-align:center;margin-top:12px;display:none;}
+
+/* ── OWNER DASHBOARD ── */
+#owner-page{display:none;}
+.o-header{background:var(--terra);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.o-logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);font-weight:900;}
+.o-logo span{color:var(--amber);}
+.o-rest-name{font-size:13px;color:rgba(250,246,238,0.7);}
+.o-header-right{display:flex;align-items:center;gap:10px;}
+.o-time{font-size:13px;color:rgba(250,246,238,0.8);font-weight:600;}
+.logout-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:var(--white);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;}
+.stat-card{background:var(--white);border-radius:16px;padding:16px;border:1px solid rgba(77,46,24,0.08);}
+.stat-icon{font-size:24px;margin-bottom:8px;}
+.stat-value{font-size:24px;font-weight:900;color:var(--red);font-family:'Playfair Display',serif;}
+.stat-label{font-size:11px;color:rgba(28,18,8,0.5);font-weight:600;margin-top:2px;}
+.stat-peak{font-size:11px;color:var(--terra);font-weight:700;margin-top:4px;}
+
+/* SECTION HEADER */
+.section-header{padding:16px 16px 8px;font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--dark);}
+
+/* TABLE STATUS */
+.table-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 16px 16px;}
+.table-cell{aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1.5px solid;}
+.table-free{background:rgba(107,140,66,0.08);border-color:rgba(107,140,66,0.3);color:#6B8C42;}
+.table-occupied{background:rgba(139,96,64,0.08);border-color:rgba(139,96,64,0.3);color:var(--red);}
+.table-ordering{background:rgba(196,169,107,0.15);border-color:rgba(196,169,107,0.5);color:#a0620a;}
+.table-num{font-size:15px;font-weight:900;margin-bottom:2px;}
+
+/* MENU MANAGEMENT */
+.menu-card{background:var(--white);border-radius:14px;margin:0 16px 10px;padding:14px;display:flex;align-items:center;gap:12px;border:1px solid rgba(77,46,24,0.08);}
+.menu-img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:rgba(77,46,24,0.08);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.menu-img img{width:52px;height:52px;border-radius:10px;object-fit:cover;}
+.menu-info{flex:1;}
+.menu-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.menu-price{font-size:13px;color:var(--red);font-weight:700;}
+.menu-toggle{width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}
+.menu-toggle.on{background:var(--terra);}
+.menu-toggle.off{background:rgba(77,46,24,0.2);}
+.menu-toggle::after{content:'';position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left 0.2s;}
+.menu-toggle.on::after{left:23px;}
+.menu-toggle.off::after{left:3px;}
+.menu-del-btn{width:32px;height:32px;border-radius:8px;background:rgba(122,62,40,0.08);border:none;color:#7a3e28;cursor:pointer;font-size:14px;flex-shrink:0;}
+
+/* ADD ITEM FORM */
+.add-form{background:var(--white);border-radius:16px;margin:0 16px 16px;padding:20px;border:1px solid rgba(77,46,24,0.08);}
+.add-form-title{font-size:16px;font-weight:800;margin-bottom:16px;color:var(--dark);}
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-size:11px;font-weight:700;color:rgba(28,18,8,0.5);margin-bottom:5px;letter-spacing:0.5px;text-transform:uppercase;}
+.form-row input,.form-row select{width:100%;padding:11px 14px;border:1.5px solid rgba(77,46,24,0.18);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--bg);outline:none;}
+.form-row input:focus,.form-row select:focus{border-color:var(--red);}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.photo-zone{border:2px dashed rgba(77,46,24,0.3);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(77,46,24,0.02);}
+.photo-zone:hover{border-color:var(--red);background:rgba(139,96,64,0.04);}
+.photo-zone-icon{font-size:32px;margin-bottom:8px;}
+.photo-zone-text{font-size:13px;color:rgba(28,18,8,0.5);font-weight:600;}
+.photo-preview{width:80px;height:80px;border-radius:12px;object-fit:cover;border:2px solid var(--amber);margin:0 auto 8px;display:block;}
+.cam-btn{width:100%;padding:11px;background:rgba(139,96,64,0.1);border:1.5px solid rgba(139,96,64,0.3);border-radius:10px;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;}
+.save-btn{width:100%;padding:14px;background:var(--terra);border:none;border-radius:12px;color:var(--white);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* SETTINGS */
+.settings-card{background:var(--white);border-radius:16px;margin:0 16px 16px;padding:20px;border:1px solid rgba(77,46,24,0.08);}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(77,46,24,0.06);}
+.setting-row:last-child{border-bottom:none;}
+.setting-label{font-size:14px;font-weight:600;}
+.setting-value{font-size:13px;color:rgba(28,18,8,0.5);}
+.setting-btn{background:rgba(77,46,24,0.08);border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--terra);cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* THANKYOU MSG EDITOR */
+.msg-editor{background:var(--bg);border-radius:10px;padding:14px;margin-top:16px;}
+.msg-editor label{display:block;font-size:11px;font-weight:700;color:rgba(28,18,8,0.5);margin-bottom:5px;text-transform:uppercase;}
+.msg-editor input,.msg-editor textarea{width:100%;padding:10px 12px;border:1.5px solid rgba(77,46,24,0.18);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--white);outline:none;margin-bottom:8px;}
+.msg-editor textarea{resize:none;height:70px;}
+.msg-save-btn{padding:9px 20px;background:var(--terra);border:none;border-radius:8px;color:var(--white);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* LIVE CAMERA MODAL */
+#cam-modal{display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column;}
+#cam-modal.show{display:flex;}
+#cam-video{flex:1;object-fit:cover;width:100%;}
+.cam-controls{padding:20px;background:#111;display:flex;justify-content:center;align-items:center;gap:20px;}
+.cam-capture{width:68px;height:68px;border-radius:50%;background:var(--red);border:4px solid #fff;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;}
+.cam-flip,.cam-cancel{padding:12px 20px;background:rgba(255,255,255,0.1);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+#cam-canvas{display:none;}
+
+/* NAV TABS */
+.nav{display:flex;background:var(--white);border-bottom:1px solid rgba(77,46,24,0.1);position:sticky;top:0;z-index:10;}
+.nav-tab{flex:1;padding:12px 4px;text-align:center;font-size:11px;font-weight:700;color:rgba(28,18,8,0.5);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+.nav-tab.active{color:var(--red);border-bottom-color:var(--red);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* TOAST */
+#o-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,0.95);color:#FAF6EE;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+#o-toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🍽️</div>
+      <div class="login-logo-text">THE <span>AROMA</span></div>
+      <div class="login-subtitle">The Aroma — Management</div>
+    </div>
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="switchLoginTab('login')">Login</div>
+      <div class="login-tab" onclick="switchLoginTab('register')">Register</div>
+    </div>
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email / Username</label>
+        <input class="form-input" id="login-email" type="text" placeholder="owner@restaurant.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="login-pass" type="password" placeholder="Enter your password" />
+      </div>
+      <button class="form-btn" onclick="doLogin()">Login →</button>
+      <div class="login-error" id="login-error">❌ Galat email ya password!</div>
+    </div>
+    <!-- REGISTER FORM -->
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Restaurant Name</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="e.g. Spice Garden" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="owner@restaurant.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="reg-pass" type="password" placeholder="Min 6 characters" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Number of Tables</label>
+        <input class="form-input" id="reg-tables" type="number" placeholder="10" value="10" min="1" max="50" />
+      </div>
+      <button class="form-btn" onclick="doRegister()">Register Restaurant →</button>
+      <div class="login-error" id="reg-error">❌ Sab fields bharo!</div>
+    </div>
+  </div>
+</div>
+
+<!-- OWNER DASHBOARD -->
+<div id="owner-page">
+  <!-- HEADER -->
+  <div class="o-header">
+    <div>
+      <div class="o-logo">THE <span>AROMA</span> <span style="font-size:14px;font-weight:400;">Owner</span></div>
+      <div class="o-rest-name" id="o-rest-name">Restaurant</div>
+    </div>
+    <div class="o-header-right">
+      <div class="o-time" id="o-clock"></div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav">
+    <div class="nav-tab active" onclick="switchTab(this,'tab-overview')">📊 Overview</div>
+    <div class="nav-tab" onclick="switchTab(this,'tab-menu')">🍽️ Menu</div>
+    <div class="nav-tab" onclick="switchTab(this,'tab-settings')">⚙️ Settings</div>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="tab-content active" id="tab-overview">
+    <!-- STATS GRID -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value" id="o-revenue">₹0</div><div class="stat-label">Today's Revenue</div></div>
+      <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-value" id="o-orders">0</div><div class="stat-label">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="o-tables-active">0</div><div class="stat-label">Active Tables</div><div class="stat-peak" id="o-peak">Checking...</div></div>
+      <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="o-avg-order">₹0</div><div class="stat-label">Avg Order Value</div></div>
+    </div>
+
+    <!-- LIVE ORDER STATUS CHART -->
+    <div class="section-header">📊 Live Order Pipeline</div>
+    <div style="padding:0 16px 16px;">
+      <div class="settings-card">
+        <div style="display:flex;gap:8px;margin-bottom:14px;" id="pipeline-bars">
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:24px;font-weight:900;color:var(--red);font-family:'Playfair Display',serif;" id="pipe-new">0</div>
+            <div style="height:6px;background:rgba(139,96,64,0.15);border-radius:3px;margin:6px 0 4px;"><div id="pipe-new-bar" style="height:6px;background:var(--red);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+            <div style="font-size:10px;color:rgba(28,18,8,0.5);font-weight:600;">NEW</div>
+          </div>
+          <div style="font-size:18px;color:rgba(28,18,8,0.2);align-self:center;">→</div>
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:24px;font-weight:900;color:var(--amber);font-family:'Playfair Display',serif;" id="pipe-prep">0</div>
+            <div style="height:6px;background:rgba(196,169,107,0.15);border-radius:3px;margin:6px 0 4px;"><div id="pipe-prep-bar" style="height:6px;background:var(--amber);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+            <div style="font-size:10px;color:rgba(28,18,8,0.5);font-weight:600;">PREPARING</div>
+          </div>
+          <div style="font-size:18px;color:rgba(28,18,8,0.2);align-self:center;">→</div>
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:24px;font-weight:900;color:#6B8C42;font-family:'Playfair Display',serif;" id="pipe-ready">0</div>
+            <div style="height:6px;background:rgba(107,140,66,0.15);border-radius:3px;margin:6px 0 4px;"><div id="pipe-ready-bar" style="height:6px;background:#6B8C42;border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+            <div style="font-size:10px;color:rgba(28,18,8,0.5);font-weight:600;">READY</div>
+          </div>
+          <div style="font-size:18px;color:rgba(28,18,8,0.2);align-self:center;">→</div>
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:24px;font-weight:900;color:var(--terra);font-family:'Playfair Display',serif;" id="pipe-billed">0</div>
+            <div style="height:6px;background:rgba(77,46,24,0.15);border-radius:3px;margin:6px 0 4px;"><div id="pipe-billed-bar" style="height:6px;background:var(--terra);border-radius:3px;width:0%;transition:width 0.5s;"></div></div>
+            <div style="font-size:10px;color:rgba(28,18,8,0.5);font-weight:600;">BILLED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVENUE CHART -->
+    <div class="section-header">💰 Revenue (Last 7 Days)</div>
+    <div style="padding:0 16px 16px;">
+      <div class="settings-card">
+        <canvas id="revenue-chart" height="140" style="width:100%;display:block;"></canvas>
+      </div>
+    </div>
+
+    <!-- TOP ITEMS -->
+    <div class="section-header">🏆 Top Ordered Items</div>
+    <div style="padding:0 16px 16px;" id="top-items-section">
+      <div class="settings-card" id="top-items-list">
+        <div style="color:rgba(28,18,8,0.4);font-size:13px;text-align:center;padding:20px;">Order hone ke baad yahan dikhega</div>
+      </div>
+    </div>
+
+    <!-- TABLE STATUS -->
+    <div class="section-header">🪑 Table Status</div>
+    <div class="table-grid" id="o-table-grid"></div>
+
+    <!-- PEAK HOURS INSIGHT -->
+    <div style="padding:0 16px 16px;">
+      <div class="settings-card" id="peak-insight" style="border-left:3px solid var(--amber);">
+        <div style="font-size:13px;font-weight:700;color:var(--terra);margin-bottom:4px;" id="peak-insight-title">⏰ Time Insight</div>
+        <div style="font-size:12px;color:rgba(28,18,8,0.6);" id="peak-insight-msg">Loading...</div>
+      </div>
+    </div>
+
+    <!-- MESSAGES EDITOR -->
+    <div style="padding:0 16px 16px;">
+      <div class="settings-card">
+        <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📨 Order Received Message</div>
+        <div class="msg-editor">
+          <label>Title</label>
+          <input id="msg-title" value="Order Place Ho Gaya! 🎉" />
+          <label>Message</label>
+          <textarea id="msg-body">Aapka order kitchen mein pahunch gaya! Thoda wait karein. 😊</textarea>
+          <button class="msg-save-btn" onclick="saveOrderMsg()">💾 Save</button>
+        </div>
+        <div style="margin-top:16px;font-size:15px;font-weight:800;margin-bottom:12px;">🙏 Thank You Message</div>
+        <div class="msg-editor">
+          <label>Title</label>
+          <input id="ty-title" value="Shukriya! 🙏" />
+          <label>Message</label>
+          <textarea id="ty-msg">Aapka khaana pasand aaya! Dobara padharo!</textarea>
+          <button class="msg-save-btn" onclick="saveTyMsg()">💾 Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU TAB -->
+  <div class="tab-content" id="tab-menu">
+    <!-- ADD NEW ITEM -->
+    <div class="section-header">➕ Add New Item</div>
+    <div class="add-form">
+      <div class="form-row">
+        <label>Food Photo</label>
+        <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-file').click()">
+          <div id="photo-placeholder">
+            <div class="photo-zone-icon">🍽️</div>
+            <div class="photo-zone-text">Tap to upload photo</div>
+          </div>
+          <img class="photo-preview" id="photo-preview" style="display:none;" />
+        </div>
+        <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="handlePhoto(this.files[0])">
+        <button class="cam-btn" onclick="openCamera()">📷 Phone Camera se Photo Lo</button>
+      </div>
+      <div class="form-2col">
+        <div class="form-row">
+          <label>Name (EN)</label>
+          <input id="inp-name" placeholder="Butter Chicken" />
+        </div>
+        <div class="form-row">
+          <label>Name (HI)</label>
+          <input id="inp-namehi" placeholder="बटर चिकन" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Description</label>
+        <input id="inp-desc" placeholder="Creamy tomato curry with tender chicken" />
+      </div>
+      <div class="form-2col">
+        <div class="form-row">
+          <label>Price (₹)</label>
+          <input id="inp-price" type="number" placeholder="320" />
+        </div>
+        <div class="form-row">
+          <label>Category</label>
+          <select id="inp-cat">
+            <option value="starter">Starter</option>
+            <option value="main">Main Course</option>
+            <option value="bread">Bread</option>
+            <option value="drink">Drink</option>
+            <option value="dessert">Dessert</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row">
+          <label>Type</label>
+          <select id="inp-type">
+            <option value="veg">Veg 🌱</option>
+            <option value="nonveg">Non-Veg 🍖</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Emoji (fallback)</label>
+          <input id="inp-emoji" placeholder="🍛" maxlength="2" />
+        </div>
+      </div>
+      <div class="form-2col">
+        <div class="form-row">
+          <label>Calories</label>
+          <input id="inp-cal" type="number" placeholder="450" />
+        </div>
+        <div class="form-row">
+          <label>Protein (g)</label>
+          <input id="inp-prot" type="number" placeholder="28" />
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveItem()">✅ Add to Menu</button>
+    </div>
+
+    <!-- MENU LIST -->
+    <div class="section-header">📋 Current Menu</div>
+    <div id="menu-list"></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="tab-content" id="tab-settings">
+    <div class="section-header">⚙️ Restaurant Settings</div>
+    <div class="settings-card">
+      <div class="setting-row">
+        <div><div class="setting-label">Restaurant Name</div><div class="setting-value" id="s-rest-name">-</div></div>
+        <button class="setting-btn" onclick="editRestName()">Edit</button>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Number of Tables</div><div class="setting-value" id="s-tables">-</div></div>
+        <button class="setting-btn" onclick="editTables()">Edit</button>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Logged in as</div><div class="setting-value" id="s-email">-</div></div>
+        <button class="setting-btn" onclick="doLogout()" style="color:#7a3e28;">Logout</button>
+      </div>
+    </div>
+    <div class="section-header" style="margin-top:8px;">📤 Share Links</div>
+    <div class="settings-card">
+      <p style="font-size:13px;color:rgba(28,18,8,0.6);margin-bottom:12px;">GitHub Pages pe host karne ke baad yeh links share karo:</p>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--terra);font-family:monospace;margin-bottom:8px;">Customer: tabin-customer.html</div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--terra);font-family:monospace;margin-bottom:8px;">Kitchen: tabin-kitchen.html</div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:12px;color:var(--terra);font-family:monospace;">Owner: tabin-owner.html</div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div id="cam-modal">
+  <video id="cam-video" autoplay playsinline></video>
+  <canvas id="cam-canvas"></canvas>
+  <div class="cam-controls">
+    <button class="cam-cancel" onclick="closeCamera()">✕ Cancel</button>
+    <button class="cam-capture" onclick="capturePhoto()">📸</button>
+    <button class="cam-flip" onclick="flipCamera()">🔄 Flip</button>
+  </div>
+</div>
+
+<div id="o-toast"></div>
+
+<script>
+var currentUser = null;
+var menuItems = [];
+var uploadedPhoto = null;
+var camStream = null;
+var camFacing = 'environment';
+
+// ── AUTH (localStorage based — replace with Firebase) ──
+function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  if(!email || !pass){ showLoginError('login-error','Sab fields bharo!'); return; }
+  
+  // Check saved users
+  try{
+    var users = JSON.parse(localStorage.getItem('tabin_users')||'{}');
+    var userData = users[email];
+    if(!userData || userData.password !== pass){
+      showLoginError('login-error','Galat email ya password!');
+      return;
+    }
+    currentUser = {email:email, restName:userData.restName, tables:userData.tables, id:userData.id};
+    localStorage.setItem('tabin_current_user', JSON.stringify(currentUser));
+    openDashboard();
+  }catch(e){ showLoginError('login-error','Error: '+e.message); }
+}
+
+function doRegister(){
+  var name = document.getElementById('reg-name').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass = document.getElementById('reg-pass').value;
+  var tables = parseInt(document.getElementById('reg-tables').value)||10;
+  if(!name||!email||!pass||pass.length<6){ showLoginError('reg-error','Sab fields bharo! Password min 6 chars.'); return; }
+  
+  try{
+    var users = JSON.parse(localStorage.getItem('tabin_users')||'{}');
+    if(users[email]){ showLoginError('reg-error','Yeh email already registered hai!'); return; }
+    var id = email.replace(/[^a-z0-9]/gi,'_').toLowerCase();
+    users[email] = {email, password:pass, restName:name, tables, id};
+    localStorage.setItem('tabin_users', JSON.stringify(users));
+    // Save settings for this restaurant
+    localStorage.setItem('tabin_settings', JSON.stringify({name, table:tables, email, id}));
+    currentUser = {email, restName:name, tables, id};
+    localStorage.setItem('tabin_current_user', JSON.stringify(currentUser));
+    openDashboard();
+    showToast('✅ Restaurant registered!');
+  }catch(e){ showLoginError('reg-error','Error: '+e.message); }
+}
+
+function doLogout(){
+  localStorage.removeItem('tabin_current_user');
+  currentUser = null;
+  document.getElementById('owner-page').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+}
+
+function openDashboard(){
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('owner-page').style.display='block';
+  document.getElementById('o-rest-name').textContent = currentUser.restName;
+  document.getElementById('s-rest-name').textContent = currentUser.restName;
+  document.getElementById('s-tables').textContent = currentUser.tables+' Tables';
+  document.getElementById('s-email').textContent = currentUser.email;
+  // Save settings to localStorage so customer/kitchen can read
+  localStorage.setItem('tabin_settings', JSON.stringify({name:currentUser.restName, table:currentUser.tables, email:currentUser.email}));
+  loadMenuItems();
+  renderOverview();
+  renderMenuList();
+  startClock();
+}
+
+function showLoginError(id, msg){ 
+  var el=document.getElementById(id); 
+  el.textContent=msg; el.style.display='block'; 
+  setTimeout(function(){el.style.display='none';},3000);
+}
+
+// ── CLOCK + PEAK ──
+function startClock(){
+  setInterval(function(){
+    var now = new Date();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var s = now.getSeconds();
+    var ampm = h>=12?'PM':'AM';
+    var h12 = h%12||12;
+    var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('o-clock').textContent = days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' | '+(h12<10?'0':'')+h12+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s+' '+ampm;
+    var peak = (h>=12&&h<=14)?'🔥 Lunch Peak!':(h>=19&&h<=22)?'🌙 Dinner Peak!':(h>=8&&h<=10)?'☕ Breakfast':h<8||h>=23?'😴 Off Hours':'🕐 Normal';
+    var pel = document.getElementById('o-peak');
+    if(pel) pel.textContent=peak;
+  },1000);
+}
+
+// ── OVERVIEW ──
+function renderOverview(){
+  try{
+    var orders = JSON.parse(localStorage.getItem('tabin_orders')||'[]');
+    var bills = JSON.parse(localStorage.getItem('tabin_bills')||'[]');
+    var tables = (currentUser&&currentUser.tables)||10;
+
+    // Stats
+    var completedRev = bills.reduce(function(s,b){return s+(b.total||0);},0);
+    var newOrds = orders.filter(function(o){return o.status==='new'||o.status==='urgent';});
+    var prepOrds = orders.filter(function(o){return o.status==='preparing';});
+    var readyOrds = orders.filter(function(o){return o.status==='ready';});
+    var avgOrder = bills.length ? Math.round(completedRev/bills.length) : 0;
+
+    document.getElementById('o-revenue').textContent = '₹'+completedRev;
+    document.getElementById('o-orders').textContent = orders.length;
+    document.getElementById('o-avg-order').textContent = '₹'+avgOrder;
+    document.getElementById('o-tables-active').textContent = Math.min(newOrds.length+prepOrds.length,tables)+'/'+tables;
+
+    // Pipeline bars
+    var total = Math.max(orders.length, 1);
+    document.getElementById('pipe-new').textContent = newOrds.length;
+    document.getElementById('pipe-prep').textContent = prepOrds.length;
+    document.getElementById('pipe-ready').textContent = readyOrds.length;
+    document.getElementById('pipe-billed').textContent = bills.length;
+    document.getElementById('pipe-new-bar').style.width = Math.round(newOrds.length/total*100)+'%';
+    document.getElementById('pipe-prep-bar').style.width = Math.round(prepOrds.length/total*100)+'%';
+    document.getElementById('pipe-ready-bar').style.width = Math.round(readyOrds.length/total*100)+'%';
+    document.getElementById('pipe-billed-bar').style.width = Math.min(100,Math.round(bills.length/total*100))+'%';
+
+    // Revenue chart (last 7 days — simulate with today's data)
+    drawRevenueChart(bills);
+
+    // Top items
+    var itemCount = {};
+    orders.forEach(function(o){
+      (o.items||[]).forEach(function(i){
+        var name = i.n||i.name||'Unknown';
+        itemCount[name] = (itemCount[name]||0)+i.qty;
+      });
+    });
+    var sorted = Object.keys(itemCount).sort(function(a,b){return itemCount[b]-itemCount[a];}).slice(0,5);
+    var maxQty = sorted.length ? itemCount[sorted[0]] : 1;
+    var topHtml = sorted.length ? sorted.map(function(name,i){
+      var qty = itemCount[name];
+      var pct = Math.round(qty/maxQty*100);
+      var medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+      return '<div style="margin-bottom:10px;">'
+        +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px;">'
+          +'<span>'+medals[i]+' '+name+'</span>'
+          +'<span style="font-weight:700;color:var(--red);">'+qty+' orders</span>'
+        +'</div>'
+        +'<div style="height:6px;background:rgba(139,96,64,0.1);border-radius:3px;">'
+          +'<div style="height:6px;background:var(--terra);border-radius:3px;width:'+pct+'%;transition:width 0.6s;"></div>'
+        +'</div>'
+      +'</div>';
+    }).join('') : '<div style="color:rgba(28,18,8,0.4);font-size:13px;text-align:center;padding:20px;">Koi order nahi abhi tak</div>';
+    document.getElementById('top-items-list').innerHTML = topHtml;
+
+    // Table grid
+    var grid='';
+    for(var i=1;i<=tables;i++){
+      var hasOrder=orders.find(function(o){return o.table===i&&(o.status==='new'||o.status==='preparing');});
+      var hasBill=bills.find(function(b){return b.table===i;});
+      var cls=hasBill?'table-ordering':hasOrder?'table-occupied':'table-free';
+      var lbl=hasBill?'Bill':'Active'||!hasOrder?'Free':'';
+      if(!hasOrder&&!hasBill) lbl='Free';
+      grid+='<div class="table-cell '+cls+'"><div class="table-num">T'+i+'</div>'+lbl+'</div>';
+    }
+    document.getElementById('o-table-grid').innerHTML=grid;
+
+    // Peak hours insight
+    var h=new Date().getHours();
+    var m=new Date().getMinutes();
+    var isPeak=(h>=12&&h<=14)||(h>=19&&h<=22);
+    var pst=document.getElementById('o-peak');
+    var insightTitle=document.getElementById('peak-insight-title');
+    var insightMsg=document.getElementById('peak-insight-msg');
+    var insights=[
+      {t:'😴 Off Hours',m:'Restaurant abhi band hai ya bahut kum log. Staff rest kar sakte hain.'},
+      {t:'☕ Breakfast Hours (8-10 AM)',m:'Chai, coffee aur nashta — quick orders ki expect karo!'},
+      {t:'🕑 Pre-Lunch (10-12 PM)',m:'Tables set karo, kitchen ready karo — lunch rush aane wali hai!'},
+      {t:'🔥 Lunch Peak (12-2 PM)',m:'RUSH TIME! Sab staff alert rahe, fast service karo!'},
+      {t:'😌 Afternoon Lull (2-5 PM)',m:'Quiet time — cleaning, prep aur inventory ka time!'},
+      {t:'🌅 Evening (5-7 PM)',m:'Evening snacks aur tea orders shuru honge.'},
+      {t:'🌙 Dinner Peak (7-10 PM)',m:'RUSH TIME! Aaj ka sabse bada revenue time — best service do!'},
+      {t:'🌃 Late Night (10-12 AM)',m:'Dinner wrap up ho raha hai — bills aayenge abhi.'},
+    ];
+    var insight = h<8?insights[0]:h<10?insights[1]:h<12?insights[2]:h<14?insights[3]:h<17?insights[4]:h<19?insights[5]:h<22?insights[6]:insights[7];
+    if(pst) pst.textContent=insight.t;
+    if(insightTitle) insightTitle.textContent='⏰ '+insight.t;
+    if(insightMsg) insightMsg.textContent=insight.m;
+
+  }catch(e){ console.log('renderOverview error:',e); }
+}
+
+function drawRevenueChart(bills){
+  var canvas = document.getElementById('revenue-chart');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.offsetWidth || 300;
+  canvas.width = W; canvas.height = 140;
+  ctx.clearRect(0,0,W,140);
+
+  // Generate last 7 days revenue (today's real + simulated for past)
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var today = new Date().getDay();
+  var todayRev = bills.reduce(function(s,b){return s+(b.total||0);},0);
+  // Simulated weekly data
+  var data = [4200,5800,3900,6200,5100,7400,todayRev];
+  // Rotate so today is last
+  var rotated = [];
+  for(var i=0;i<7;i++) rotated.push(data[(today-6+i+7)%7]);
+  rotated[6] = todayRev; // today is always real
+
+  var maxVal = Math.max.apply(null, rotated) || 1;
+  var barW = Math.floor((W-40)/7)-4;
+  var chartH = 100;
+  var baseY = 125;
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(77,46,24,0.08)';
+  ctx.lineWidth = 0.5;
+  for(var g=0;g<4;g++){
+    var y = baseY - (g/3)*chartH;
+    ctx.beginPath(); ctx.moveTo(30,y); ctx.lineTo(W-10,y); ctx.stroke();
+    ctx.fillStyle='rgba(28,18,8,0.3)'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('₹'+Math.round((g/3)*maxVal/100)*100, 28, y+3);
+  }
+
+  // Bars
+  rotated.forEach(function(val,i){
+    var x = 35 + i*(barW+4);
+    var barH = Math.max(4, Math.round((val/maxVal)*chartH));
+    var y = baseY - barH;
+    var isToday = i===6;
+    ctx.fillStyle = isToday ? '#4D2E18' : 'rgba(139,96,64,0.35)';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x,y,barW,barH,3) : (ctx.rect(x,y,barW,barH));
+    ctx.fill();
+    // Value on top
+    if(isToday || val > maxVal*0.7){
+      ctx.fillStyle='rgba(28,18,8,0.7)'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('₹'+Math.round(val/100)*100, x+barW/2, y-3);
+    }
+    // Day label
+    var dayIdx = (today-6+i+7)%7;
+    ctx.fillStyle = isToday ? '#4D2E18' : 'rgba(28,18,8,0.4)';
+    ctx.font = isToday ? 'bold 10px sans-serif' : '9px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(isToday?'Today':days[dayIdx], x+barW/2, baseY+12);
+  });
+}
+
+// ── MENU ──
+function loadMenuItems(){
+  try{
+    var m = localStorage.getItem('tabin_menu');
+    if(m) menuItems = JSON.parse(m)||[];
+  }catch(e){ menuItems=[]; }
+}
+
+function renderMenuList(){
+  loadMenuItems();
+  if(!menuItems.length){
+    document.getElementById('menu-list').innerHTML = '<div style="text-align:center;padding:40px;color:rgba(28,18,8,0.4);">No menu items yet. Add some above!</div>';
+    return;
+  }
+  document.getElementById('menu-list').innerHTML = menuItems.map(function(item,idx){
+    var inStock = item.inStock !== false; // default true
+    var imgHtml = item.image
+      ? '<img src="'+item.image+'" style="width:52px;height:52px;border-radius:10px;object-fit:cover;border:1px solid rgba(77,46,24,0.1);">'
+      : '<div class="menu-img">'+item.emoji+'</div>';
+    return '<div class="menu-card" style="opacity:'+(inStock?'1':'0.55')+';border-left:3px solid '+(inStock?'rgba(77,46,24,0.08)':'#7a3e28')+';">'
+      +'<div class="menu-img" style="position:relative;">'
+        +imgHtml
+        +(!inStock?'<div style="position:absolute;inset:0;background:rgba(122,62,40,0.6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;text-align:center;">OUT OF<br>STOCK</div>':'')
+      +'</div>'
+      +'<div class="menu-info">'
+        +'<div class="menu-name">'+item.name+'</div>'
+        +'<div class="menu-price">₹'+item.price+' • '+item.cat+'</div>'
+        +'<div style="font-size:11px;font-weight:700;color:'+(inStock?'#6B8C42':'#7a3e28')+';">'+(inStock?'✅ Available':'❌ Out of Stock')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">'
+        +'<button onclick="toggleStock('+idx+')" style="padding:5px 10px;border-radius:8px;border:1px solid '+(inStock?'rgba(107,140,66,0.4)':'rgba(122,62,40,0.4)')+';background:'+(inStock?'rgba(107,140,66,0.1)':'rgba(122,62,40,0.1)')+';color:'+(inStock?'#6B8C42':'#7a3e28')+';font-size:11px;font-weight:700;cursor:pointer;font-family:\'DM Sans\',sans-serif;white-space:nowrap;">'+(inStock?'Mark Out':'Back In')+'</button>'
+        +'<button class="menu-del-btn" onclick="deleteItem('+idx+')">🗑</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function toggleStock(idx){
+  if(!menuItems[idx]) return;
+  menuItems[idx].inStock = menuItems[idx].inStock === false ? true : false;
+  localStorage.setItem('tabin_menu', JSON.stringify(menuItems));
+  renderMenuList();
+  var item = menuItems[idx];
+  showToast(item.inStock ? '✅ '+item.name+' — Available!' : '❌ '+item.name+' — Out of Stock');
+}
+
+function deleteItem(idx){
+  menuItems.splice(idx,1);
+  localStorage.setItem('tabin_menu', JSON.stringify(menuItems));
+  renderMenuList();
+  showToast('✅ Item removed!');
+}
+
+function saveItem(){
+  var name = document.getElementById('inp-name').value.trim();
+  var price = parseInt(document.getElementById('inp-price').value)||0;
+  if(!name||!price){ showToast('⚠️ Name aur price zaruri hai!'); return; }
+  var item = {
+    id: Date.now(),
+    name: name,
+    nameHi: document.getElementById('inp-namehi').value||name,
+    desc: document.getElementById('inp-desc').value||'',
+    descHi: document.getElementById('inp-desc').value||'',
+    price: price,
+    cat: document.getElementById('inp-cat').value,
+    tags: [document.getElementById('inp-type').value],
+    emoji: document.getElementById('inp-emoji').value||'🍽️',
+    cal: parseInt(document.getElementById('inp-cal').value)||0,
+    protein: parseInt(document.getElementById('inp-prot').value)||0,
+    carbs: 0, fat: 0, spice: 0, ing: [],
+    image: uploadedPhoto||null
+  };
+  menuItems.push(item);
+  localStorage.setItem('tabin_menu', JSON.stringify(menuItems));
+  // Reset form
+  ['inp-name','inp-namehi','inp-desc','inp-price','inp-cal','inp-prot','inp-emoji'].forEach(function(id){document.getElementById(id).value='';});
+  uploadedPhoto=null;
+  document.getElementById('photo-preview').style.display='none';
+  document.getElementById('photo-placeholder').style.display='block';
+  renderMenuList();
+  showToast('✅ '+name+' added to menu!');
+}
+
+// ── PHOTO ──
+function handlePhoto(file){
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    uploadedPhoto = e.target.result;
+    document.getElementById('photo-preview').src = uploadedPhoto;
+    document.getElementById('photo-preview').style.display='block';
+    document.getElementById('photo-placeholder').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function openCamera(){
+  document.getElementById('cam-modal').classList.add('show');
+  startCam(camFacing);
+}
+
+function startCam(facing){
+  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showToast('❌ Camera support nahi hai — HTTPS chahiye (GitHub Pages pe kaam karega)');
+    closeCamera(); return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false})
+  .then(function(s){
+    camStream=s;
+    var v=document.getElementById('cam-video');
+    v.srcObject=s;
+    v.play().catch(function(){});
+  })
+  .catch(function(err){
+    showToast('📷 Camera allow karo! Error: '+err.name);
+    closeCamera();
+  });
+}
+
+function flipCamera(){ camFacing=camFacing==='environment'?'user':'environment'; startCam(camFacing); }
+
+function capturePhoto(){
+  var v = document.getElementById('cam-video');
+  var c = document.getElementById('cam-canvas');
+  c.width=v.videoWidth; c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  uploadedPhoto = c.toDataURL('image/jpeg',0.85);
+  document.getElementById('photo-preview').src=uploadedPhoto;
+  document.getElementById('photo-preview').style.display='block';
+  document.getElementById('photo-placeholder').style.display='none';
+  closeCamera();
+  showToast('✅ Photo capture ho gaya!');
+}
+
+function closeCamera(){
+  if(camStream){ camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
+  document.getElementById('cam-modal').classList.remove('show');
+}
+
+// ── SETTINGS ──
+function editRestName(){
+  var cur = currentUser ? currentUser.restName : '';
+  var newName = window.prompt ? window.prompt('Restaurant ka naam:', cur) : cur;
+  if(!newName || !newName.trim()) return;
+  newName = newName.trim();
+  if(currentUser) currentUser.restName = newName;
+  var el1 = document.getElementById('o-rest-name');
+  var el2 = document.getElementById('s-rest-name');
+  if(el1) el1.textContent = newName;
+  if(el2) el2.textContent = newName;
+  try{
+    var settings = {name:newName, table:(currentUser||{}).tables||10, email:(currentUser||{}).email||''};
+    localStorage.setItem('tabin_settings', JSON.stringify(settings));
+    var users = JSON.parse(localStorage.getItem('tabin_users')||'{}');
+    var email = (currentUser||{}).email;
+    if(email && users[email]) users[email].restName = newName;
+    localStorage.setItem('tabin_users', JSON.stringify(users));
+    localStorage.setItem('tabin_current_user', JSON.stringify(currentUser));
+  }catch(e){}
+  showToast('✅ Naam update ho gaya: ' + newName);
+}
+
+function editTables(){
+  var cur = currentUser ? currentUser.tables : 10;
+  var newVal = window.prompt ? window.prompt('Number of tables:', cur) : cur;
+  if(!newVal || isNaN(newVal)) return;
+  var n = parseInt(newVal);
+  if(currentUser) currentUser.tables = n;
+  var el = document.getElementById('s-tables');
+  if(el) el.textContent = n + ' Tables';
+  try{
+    var settings = {name:(currentUser||{}).restName||'', table:n, email:(currentUser||{}).email||''};
+    localStorage.setItem('tabin_settings', JSON.stringify(settings));
+    var users = JSON.parse(localStorage.getItem('tabin_users')||'{}');
+    var email = (currentUser||{}).email;
+    if(email && users[email]) users[email].tables = n;
+    localStorage.setItem('tabin_users', JSON.stringify(users));
+    localStorage.setItem('tabin_current_user', JSON.stringify(currentUser));
+  }catch(e){}
+  renderOverview();
+  showToast('✅ Tables update ho gaye: ' + n);
+}
+
+function saveOrderMsg(){
+  var title=document.getElementById('msg-title').value;
+  var msg=document.getElementById('msg-body').value;
+  localStorage.setItem('tabin_order_msg', JSON.stringify({title,msg}));
+  showToast('✅ Order message saved!');
+}
+
+function saveTyMsg(){
+  var title=document.getElementById('ty-title').value;
+  var msg=document.getElementById('ty-msg').value;
+  localStorage.setItem('tabin_thankyou', JSON.stringify({title,msg}));
+  showToast('✅ Thank you message saved!');
+}
+
+// ── UI HELPERS ──
+function switchLoginTab(tab){
+  document.querySelectorAll('.login-tab').forEach(function(t){t.classList.remove('active');});
+  event.target.classList.add('active');
+  document.getElementById('login-form').style.display=tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display=tab==='register'?'block':'none';
+}
+
+function switchTab(btn, tabId){
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
+  document.getElementById(tabId).classList.add('active');
+  if(tabId==='tab-overview') renderOverview();
+  if(tabId==='tab-menu') renderMenuList();
+}
+
+function showToast(msg){
+  var t=document.getElementById('o-toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(window._ot);
+  window._ot=setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+// ── INIT ──
+// Check if already logged in
+try{
+  var saved=localStorage.getItem('tabin_current_user');
+  if(saved){ currentUser=JSON.parse(saved); openDashboard(); }
+}catch(e){}
+
+// Refresh overview every 5s
+setInterval(function(){ if(currentUser) renderOverview(); },5000);
+</script>
+</body>
+</html>

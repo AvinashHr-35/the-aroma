@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Aroma — Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAF6EE;--dk:#1C1208;--tr:#4D2E18;--rd:#8B6040;--am:#C4A96B;--wh:#FAF6EE;--gr:#5a7a2a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#F5EFE0;color:var(--dk);min-height:100vh;}
+.hdr{background:var(--tr);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--wh);}
+.logo span{color:var(--am);}
+.badge{background:var(--rd);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-left:8px;}
+.live{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(250,246,238,0.7);}
+.dot{width:7px;height:7px;border-radius:50%;background:#6B8C42;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.stats{display:flex;gap:10px;padding:12px 16px;overflow-x:auto;background:var(--wh);border-bottom:1px solid rgba(77,46,24,0.1);}
+.sp{background:#F5EFE0;border:1px solid rgba(77,46,24,0.1);border-radius:10px;padding:8px 14px;flex-shrink:0;text-align:center;}
+.sp-n{font-size:22px;font-weight:900;color:var(--rd);font-family:'Playfair Display',serif;}
+.sp-l{font-size:10px;color:rgba(28,18,8,0.45);font-weight:600;margin-top:1px;}
+
+/* BILL ALERT */
+.bill-alert{margin:12px 16px;background:linear-gradient(135deg,#7a3e28,#a05530);border-radius:12px;padding:12px 16px;display:none;}
+.bill-alert.show{display:block;}
+.bill-alert-title{color:#fff;font-size:13px;font-weight:700;margin-bottom:8px;}
+.bill-card{background:rgba(255,255,255,0.15);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:13px;}
+.bdone{background:#fff;color:#7a3e28;border:none;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* WAITER ALERT */
+.waiter-pop{display:none;position:fixed;top:70px;right:14px;background:var(--tr);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,0.2);z-index:100;font-size:13px;font-weight:600;}
+.waiter-pop.show{display:block;animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{transform:translateX(80px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.wdismiss{display:block;margin-top:6px;background:rgba(255,255,255,0.2);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;}
+
+/* ORDERS */
+.sec{padding:0 16px 20px;}
+.sec-hdr{font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(28,18,8,0.35);text-transform:uppercase;padding:16px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-hdr::after{content:'';flex:1;height:1px;background:rgba(77,46,24,0.1);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;}
+.card{background:var(--wh);border-radius:14px;border:1.5px solid rgba(77,46,24,0.1);overflow:hidden;}
+.card.new{border-color:rgba(139,96,64,0.5);box-shadow:0 3px 16px rgba(139,96,64,0.1);}
+.card.preparing{border-color:rgba(196,169,107,0.4);}
+.card.ready{border-color:rgba(90,122,42,0.4);opacity:0.85;}
+.card.cancelled{border-color:rgba(122,62,40,0.3);opacity:0.6;}
+.ch{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(77,46,24,0.07);}
+.ctbl{font-family:'Playfair Display',serif;font-size:17px;font-weight:900;color:var(--tr);}
+.ctmr{font-size:12px;font-weight:700;padding:3px 9px;border-radius:7px;}
+.t-new{background:rgba(139,96,64,0.1);color:var(--rd);}
+.t-mid{background:rgba(196,169,107,0.18);color:#8a620a;}
+.t-rdy{background:rgba(90,122,42,0.1);color:var(--gr);}
+.ci{padding:10px 14px;}
+.cir{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:13px;border-bottom:1px solid rgba(77,46,24,0.04);}
+.cir:last-child{border-bottom:none;}
+.ciqb{background:var(--tr);color:#fff;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.cin{flex:1;font-weight:600;}
+.cip{font-size:11px;color:rgba(28,18,8,0.4);}
+.ctot{display:flex;justify-content:space-between;padding:7px 14px;background:rgba(77,46,24,0.03);font-size:12px;font-weight:800;color:var(--rd);border-top:1px dashed rgba(77,46,24,0.1);}
+.cf{padding:8px 12px;display:flex;gap:7px;}
+.kb{flex:1;padding:9px;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.k-recv{background:var(--tr);color:#fff;}
+.k-rdy{background:rgba(90,122,42,0.1);color:var(--gr);border:1px solid rgba(90,122,42,0.25);}
+.k-rm{background:rgba(122,62,40,0.08);color:#7a3e28;border:1px solid rgba(122,62,40,0.2);}
+.k-cancel{background:rgba(122,62,40,0.08);color:#7a3e28;border:1px solid rgba(122,62,40,0.15);}
+.cancelled-msg{text-align:center;color:#7a3e28;font-size:12px;font-weight:700;padding:6px;}
+.empty{text-align:center;padding:30px;color:rgba(28,18,8,0.3);font-size:13px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(28,18,8,0.94);color:var(--wh);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div style="display:flex;align-items:center;">
+    <div class="logo">THE <span>AROMA</span></div>
+    <div class="badge">Kitchen</div>
+    <div class="live" style="margin-left:10px;"><div class="dot"></div>Live</div>
+  </div>
+  <div id="rest-name" style="font-size:12px;color:rgba(250,246,238,0.6);">Kitchen Display</div>
+</div>
+
+<div class="stats">
+  <div class="sp"><div class="sp-n" id="s-new">0</div><div class="sp-l">New</div></div>
+  <div class="sp"><div class="sp-n" id="s-prep">0</div><div class="sp-l">Preparing</div></div>
+  <div class="sp"><div class="sp-n" id="s-rdy">0</div><div class="sp-l">Ready</div></div>
+  <div class="sp"><div class="sp-n" id="s-bill">0</div><div class="sp-l">Bills</div></div>
+</div>
+
+<div class="bill-alert" id="bill-alert">
+  <div class="bill-alert-title">🧾 Bill Requests</div>
+  <div id="bill-list"></div>
+</div>
+
+<div class="waiter-pop" id="waiter-pop">
+  🔔 Table <span id="waiter-tbl">?</span> ne waiter bulaya!
+  <button class="wdismiss" onclick="dismissWaiter()">✓ Dismiss</button>
+</div>
+
+<div class="sec">
+  <div class="sec-hdr">🔴 New Orders</div>
+  <div class="grid" id="g-new"></div>
+  <div class="sec-hdr">⏳ Preparing</div>
+  <div class="grid" id="g-prep"></div>
+  <div class="sec-hdr">✅ Ready</div>
+  <div class="grid" id="g-rdy"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var orders=[], bills=[], timers={}, lastWaiter=0;
+
+function ls(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lss(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+function load(){
+  try{var o=ls('tabin_orders');orders=o?JSON.parse(o):[];}catch(e){orders=[];}
+  try{var b=ls('tabin_bills');bills=b?JSON.parse(b):[];}catch(e){bills=[];}
+  try{var s=ls('tabin_settings');if(s){var p=JSON.parse(s);if(p.name)document.getElementById('rest-name').textContent=p.name+' Kitchen';}}catch(e){}
+}
+
+function saveOrders(){lss('tabin_orders',JSON.stringify(orders));}
+
+function render(){
+  var nw=orders.filter(function(o){return o.status==='new'||o.status==='urgent';});
+  var pr=orders.filter(function(o){return o.status==='preparing';});
+  var rd=orders.filter(function(o){return o.status==='ready';});
+  document.getElementById('s-new').textContent=nw.length;
+  document.getElementById('s-prep').textContent=pr.length;
+  document.getElementById('s-rdy').textContent=rd.length;
+  document.getElementById('s-bill').textContent=bills.length;
+
+  document.getElementById('g-new').innerHTML=nw.length?nw.map(function(o){return card(o,orders.indexOf(o));}).join(''):'<div class="empty">✅ No new orders</div>';
+  document.getElementById('g-prep').innerHTML=pr.length?pr.map(function(o){return card(o,orders.indexOf(o));}).join(''):'<div class="empty" style="padding:10px;">Nothing preparing</div>';
+  document.getElementById('g-rdy').innerHTML=rd.length?rd.map(function(o){return card(o,orders.indexOf(o));}).join(''):'<div class="empty" style="padding:10px;">Nothing ready</div>';
+
+  if(bills.length){
+    document.getElementById('bill-alert').className='bill-alert show';
+    document.getElementById('bill-list').innerHTML=bills.map(function(b,i){
+      return '<div class="bill-card"><span>Table '+b.table+' — ₹'+b.total+' ('+b.payMethod+')</span><button class="bdone" onclick="billDone('+i+')">Bill De Diya ✓</button></div>';
+    }).join('');
+  } else {
+    document.getElementById('bill-alert').className='bill-alert';
+  }
+}
+
+function card(o,idx){
+  var isCan=o.status==='cancelled';
+  var isNew=o.status==='new'||o.status==='urgent';
+  var isPrep=o.status==='preparing';
+  var isRdy=o.status==='ready';
+  var tot=(o.items||[]).reduce(function(s,i){return s+(i.price||0)*i.qty;},0);
+  var items=(o.items||[]).map(function(i){return '<div class="cir"><div class="ciqb">'+i.qty+'</div><div class="cin">'+i.n+'</div>'+(i.price?'<div class="cip">₹'+(i.price*i.qty)+'</div>':'')+'</div>';}).join('');
+  var totHtml=tot>0?'<div class="ctot"><span>Total</span><span>₹'+tot+'</span></div>':'';
+  var tmrCls=isNew?'t-new':isPrep?'t-mid':'t-rdy';
+  var tmrTxt=o.timerDisplay||(isNew?'New':isPrep?'Preparing':isRdy?'✓ Ready':'');
+  var footer='';
+  if(isCan){footer='<div class="cancelled-msg">❌ Customer ne cancel kiya</div><div class="cf"><button class="kb k-rm" onclick="rmOrder('+idx+')">🗑️ Hata Do</button></div>';}
+  else if(isNew){footer='<div class="cf"><button class="kb k-recv" onclick="recv('+idx+')">✅ Order Received</button><button class="kb k-cancel" onclick="cancelK('+idx+')">✕</button></div>';}
+  else if(isPrep){footer='<div class="cf"><button class="kb k-rdy" onclick="markRdy('+idx+')">✓ Mark Ready</button></div>';}
+  else if(isRdy){footer='<div class="cf"><button class="kb k-rm" onclick="rmOrder('+idx+')">🗑️ Served — Remove</button></div>';}
+  return '<div class="card '+o.status+'"><div class="ch"><div class="ctbl">Table '+o.table+'</div><div class="ctmr '+tmrCls+'">'+tmrTxt+'</div></div><div class="ci">'+items+'</div>'+totHtml+footer+'</div>';
+}
+
+function recv(idx){
+  if(!orders[idx])return;
+  orders[idx].status='preparing';orders[idx].startTime=Date.now();orders[idx].timerDisplay='0:00';
+  saveOrders();
+  // Notify customer
+  try{var m=JSON.parse(ls('tabin_order_msg')||'{}');lss('tabin_notify',JSON.stringify({show:true,title:m.title||'Order Received! 👨‍🍳',msg:m.msg||'Kitchen ne order liya!',time:Date.now()}));}catch(e){}
+  startTimer(idx);render();
+  toast('📲 Table '+orders[idx].table+' — Preparing!');
+}
+
+function startTimer(idx){
+  if(timers[idx])clearInterval(timers[idx]);
+  timers[idx]=setInterval(function(){
+    if(!orders[idx]||orders[idx].status!=='preparing'){clearInterval(timers[idx]);return;}
+    var el=Math.floor((Date.now()-orders[idx].startTime)/1000);
+    var m=Math.floor(el/60),s=el%60;
+    orders[idx].timerDisplay=m+'m '+(s<10?'0':'')+s+'s';
+    if(el>=15*60){orders[idx].status='ready';orders[idx].timerDisplay='✓ Ready';clearInterval(timers[idx]);toast('✅ Table '+orders[idx].table+' Ready!');saveOrders();}
+    render();
+  },1000);
+}
+
+function markRdy(idx){if(!orders[idx])return;orders[idx].status='ready';orders[idx].timerDisplay='✓ Ready';if(timers[idx])clearInterval(timers[idx]);saveOrders();toast('✅ Table '+orders[idx].table+' Ready!');render();}
+function cancelK(idx){if(!orders[idx])return;orders[idx].status='cancelled';saveOrders();render();}
+function rmOrder(idx){orders.splice(idx,1);saveOrders();render();}
+
+function billDone(idx){
+  try{lss('tabin_notify_ty',JSON.stringify({show:true,time:Date.now()}));}catch(e){}
+  bills.splice(idx,1);lss('tabin_bills',JSON.stringify(bills));
+  toast('✅ Bill de diya!');render();
+}
+
+function dismissWaiter(){document.getElementById('waiter-pop').className='waiter-pop';}
+
+function poll(){
+  load();render();
+  // Restart timers
+  orders.forEach(function(o,i){if(o.status==='preparing'&&o.startTime&&!timers[i])startTimer(i);});
+  // Waiter call
+  try{var w=ls('tabin_waiter');if(w){var d=JSON.parse(w);if(d&&d.time>lastWaiter){lastWaiter=d.time;document.getElementById('waiter-tbl').textContent=d.table||'?';document.getElementById('waiter-pop').className='waiter-pop show';setTimeout(function(){document.getElementById('waiter-pop').className='waiter-pop';},7000);try{localStorage.removeItem('tabin_waiter');}catch(e){}}}}catch(e){}
+  // Cancel notify
+  try{var c=ls('tabin_cancel');if(c){var d=JSON.parse(c);if(d&&Date.now()-d.time<5000){toast('❌ Table '+d.table+' order cancel kar diya!');try{localStorage.removeItem('tabin_cancel');}catch(e){}}}}catch(e){}
+}
+
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._t);window._t=setTimeout(function(){t.classList.remove('show');},3000);}
+
+load();render();setInterval(poll,2000);
+</script>
+</body>
+</html>
